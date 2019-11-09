@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 // const mongojs = require('mongojs');
+const mongoose = require('mongoose');
 const mongodb = require('mongodb');
 // const db = mongojs('doglist', ['dogs']); //doglist = db, dogs = collection
 const app = express();
@@ -72,17 +73,28 @@ let initialDogs = [{
 ];
 let collection = null;
 
+mongoose.connect('mongodb://localhost/doggies', { useNewUrlParser: true }); // connect to doggies db, or if it doesn't exist - create it
 
-(async () => {
-    try {
-        const URL = 'mongodb://localhost:27017';
-        const connection = await mongodb.connect(URL, {useUnifiedTopology: true});
-        const db = connection.db('meddogs');
-        collection = db.collection('doggies');
-    } catch (e) {
-        console.log('faced error', e);
-    }
-})();
+mongoose.connection.once('open', function () { // event listner fired only once
+    console.log('Connection has been made');
+    //done();
+}).on('error', function (error) { // event listner fired with each connection
+    console.log('Connection error:', error);
+});
+
+
+// (async () => {
+//     try {
+//         const URL = 'mongodb://localhost:27017/doggies';
+//         const connection = await mongodb.connect(URL, {
+//             useUnifiedTopology: true
+//         });
+//         const db = connection.db('meddogs');
+//         collection = db.collection('doggies');
+//     } catch (e) {
+//         console.log('faced error', e);
+//     }
+// })();
 
 // await collection.insertMany(initialDogs);
 
